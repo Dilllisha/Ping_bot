@@ -7,16 +7,6 @@ echo ========================================
 echo       Bot Launcher - Запуск бота
 echo ========================================
 
-:: Проверка наличия Python
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo.
-    echo ОШИБКА: Python не установлен или не добавлен в PATH.
-    echo Убедитесь, что Python установлен и доступен из командной строки.
-    pause
-    exit /b 1
-)
-
 :: Проверка существования файла bot.py
 if not exist "bot.py" (
     echo.
@@ -25,28 +15,25 @@ if not exist "bot.py" (
     exit /b 1
 )
 
-:: Установка зависимостей из requirements.txt (если файл существует)
-if exist "requirements.txt" (
+:: Проверка существования виртуального окружения .venv
+if not exist ".venv" (
     echo.
-    echo Установка зависимостей из requirements.txt...
-    python -m pip install -r requirements.txt
-    if %errorlevel% neq 0 (
-        echo.
-        echo ОШИБКА при установке зависимостей. Проверьте интернет-соединение и файл requirements.txt.
-        pause
-        exit /b 1
-    )
-) else (
-    :: Если requirements.txt нет, устанавливаем telebot
+    echo ОШИБКА: Виртуальное окружение .venv не найдено в текущей директории.
+    echo Создайте его с помощью команды: python -m venv .venv
+    pause
+    exit /b 1
+)
+
+:: Активация виртуального окружения
+echo.
+echo Активация виртуального окружения .venv...
+call ".venv\Scripts\activate.bat"
+
+if %errorlevel% neq 0 (
     echo.
-    echo Установка библиотеки telebot...
-    python -m pip install telebot
-    if %errorlevel% neq 0 (
-        echo.
-        echo ОШИБКА при установке telebot. Проверьте интернет-соединение.
-        pause
-        exit /b 1
-    )
+    echo ОШИБКА: Не удалось активировать виртуальное окружение.
+    pause
+    exit /b 1
 )
 
 :: Запуск бота
